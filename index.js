@@ -50,7 +50,11 @@ async function main() {
         //     bathrooms: 2
         // })
 
-        await updateAllListings(client)
+        // await updateAllListings(client)
+
+        // await deleteListing(client, "Grace")
+
+        await deleteManyListing(client, new Date("2019-02-15"))
     }
     catch (e) {
         console.log(e)
@@ -60,6 +64,18 @@ async function main() {
 }
 
 main().catch(console.error);
+
+async function deleteManyListing(client, date) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteMany({"last_scraped": {$gt: date } });
+
+    console.log(`${result.deletedCount} documents deleted`);
+}
+
+async function deleteListing(client, nameOfListing) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteOne({name: nameOfListing});
+
+    console.log(`${result.deletedCount} document/s deleted`)
+}
 
 async function updateAllListings(client) {
     const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateMany({
