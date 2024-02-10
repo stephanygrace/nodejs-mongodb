@@ -44,11 +44,13 @@ async function main() {
         //     beds: 73
         // })
 
-        await upsertListing(client, "Tepanyii", {
-            name: "Tepanyii",
-            bedrooms: 5,
-            bathrooms: 2
-        })
+        // await upsertListing(client, "Tepanyii", {
+        //     name: "Tepanyii",
+        //     bedrooms: 5,
+        //     bathrooms: 2
+        // })
+
+        await updateAllListings(client)
     }
     catch (e) {
         console.log(e)
@@ -58,6 +60,17 @@ async function main() {
 }
 
 main().catch(console.error);
+
+async function updateAllListings(client) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateMany({
+        property_type: { $exists: false } },
+        { $set: {property_type: "Unknown"}}
+        );
+
+        console.log(`${result.matchedCount} documents matched`);
+        console.log(`${result.modifiedCount} documents modified`)
+
+}
 
 async function upsertListing(client, nameOfListing, updatedListing) {
     const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateOne({name: nameOfListing}, {$set: updatedListing}, {upsert: true})
