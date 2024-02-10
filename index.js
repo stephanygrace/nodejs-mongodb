@@ -33,10 +33,21 @@ async function main() {
 
         // await findOneListingByName(client, "Stephany")
 
-        await findListingsWithFilter(client, {
-            minimumNumberOfBedrooms: 4,
-            minimumNumberOfBathrooms: 2,
-            maximumNumberOfResults: 5
+        // await findListingsWithFilter(client, {
+        //     minimumNumberOfBedrooms: 4,
+        //     minimumNumberOfBathrooms: 2,
+        //     maximumNumberOfResults: 5
+        // })
+
+        // await updateOneListingByName(client, "Stephany", {
+        //     bedrooms: 23,
+        //     beds: 73
+        // })
+
+        await upsertListing(client, "Tepanyii", {
+            name: "Tepanyii",
+            bedrooms: 5,
+            bathrooms: 2
         })
     }
     catch (e) {
@@ -47,6 +58,25 @@ async function main() {
 }
 
 main().catch(console.error);
+
+async function upsertListing(client, nameOfListing, updatedListing) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateOne({name: nameOfListing}, {$set: updatedListing}, {upsert: true})
+
+    console.log(`${result.matchedCount} documents matched`);
+
+    if (result.upsertedCount > 0) {
+        console.log(`Document is upserted with ID ${result.upsertedId}`)
+    } else{
+        console.log(`${result.modifiedCount} documents updated`)
+    }
+}
+
+async function updateOneListingByName (client, nameOfListing, updatedListing) {
+   const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateOne({name: nameOfListing}, {$set: updatedListing})
+
+   console.log(`${result.matchedCount} documents`);
+   console.log(`${result.modifiedCount} documents updated`)
+}
 
 async function findListingsWithFilter(client, {
     minimumNumberOfBedrooms = 0,
